@@ -1,0 +1,114 @@
+import { RequestHandler } from 'express'
+import { SignupRequest, LoginRequest, AuthResponse } from '../types'
+import { prisma } from '../utils/prisma'
+import bcrypt from 'bcryptjs'
+import { generateTokens, validateRefreshToken } from '../utils/tokens'
+
+export const signupHandler: RequestHandler<{}, AuthResponse, SignupRequest> = async (req, res) => {
+    const { email, password, name } = req.body
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const user = await prisma.user.create({
+            data: { email, name, password: hashedPassword }
+        })
+
+        const tokens = await generateTokens(user.id)
+        res.status(201).json(tokens)
+        return
+    } catch (error) {
+        res.status(409).json({
+            error: "Email already in use",
+        })
+        return
+    }
+}
+
+export const loginHandler: RequestHandler<{}, AuthResponse, LoginRequest> = async (req, res) => {
+    const { email, password } = req.body
+    if (!email || !password) {
+        res.status(400).json({ error: "Email and password required" })
+        return
+    }
+
+    try {
+        const user = await prisma.user.findUnique({ where: { email } })
+        if (!user) {
+            res.status(404).json({ error: "User not found" })
+            //   res.status(401).json({ error: "Invalid email or password" })
+            return 
+        }
+
+        const valid = await bcrypt.compare(password, user.password)
+        if (!valid) {
+            res.status(401).json({ error: "Invalid password" })
+            //   res.status(401).json({ error: "Invalid email or password" })
+            return 
+        }
+
+        const tokens = await generateTokens(user.id)
+        res.status(200).json(tokens)
+        return
+    } catch (error) {
+        res.status(500).json({ error: "Authentication failed" })
+        return
+    }
+}
+
+export const logoutHandler: RequestHandler = async (req, res) => {
+    const { refreshToken } = req.body
+
+    if (!refreshToken) {
+        res.status(400).json({ error: "Refresh token required" })
+        return
+    }
+
+    try {
+        // Delete the refresh token
+        const deletedToken = await prisma.refreshToken.deleteMany({
+        where: { token: refreshToken }
+        })
+
+        // Handle token not found
+        if (deletedToken.count === 0) {
+            res.status(404).json({ error: "Token not found or already revoked" })
+            return
+        }
+
+        // Successful logout (no content)
+        res.status(204).end()
+        return
+    } catch (error) {
+        res.status(500).json({ error: "Logout failed" })
+        return
+    }
+}
+
+export const refreshTokenHandler: RequestHandler = async (req, res) => {
+    const { refreshToken } = req.body
+
+    try {
+        // Validate token
+        const storedToken = await validateRefreshToken(refreshToken)
+
+        if (!storedToken || storedToken.expiresAt < new Date()) {
+            res.status(403).json({ error: "Invalid or expired token" })
+            return
+        }
+
+        // Delete old token (rotation)
+        await prisma.refreshToken.delete({
+            where: { id: storedToken.id } 
+        })
+
+        // Generate new tokens
+        const tokens = await generateTokens(storedToken.user.id)
+
+        res.status(200).json(tokens)
+        return
+
+    } catch (error) {
+        res.status(401).json({ error: "Token refresh failed" })
+        return
+    }
+}
