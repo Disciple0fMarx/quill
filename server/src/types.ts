@@ -4,7 +4,7 @@ import { Request } from "express"
 export type SignupRequest = {
   email: string
   password: string
-  name?: string
+  name: string
 }
 
 export type LoginRequest = {
@@ -21,11 +21,19 @@ export interface AuthenticatedRequest extends Request {
 export type AuthResponse = { 
   accessToken: string
   refreshToken: string
+  user?: {
+    id: string
+    email: string
+    name?: string | null
+    role?: 'READER' | 'AUTHOR'
+    createdAt?: Date
+  }
   error?: never
-} | { 
+} | {
   error: string
   accessToken?: never
   refreshToken?: never
+  user?: never
 }
 
 // JWT Payload

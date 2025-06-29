@@ -13,7 +13,7 @@ export const generateTokens = async (userId: string) => {
 
   // 2. Create random refresh token (7 days expiry)
   const refreshToken = crypto.randomBytes(32).toString('hex')
-  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) 
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 
   // 3. Save to database
   await prisma.refreshToken.create({

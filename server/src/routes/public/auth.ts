@@ -1,4 +1,5 @@
-import { router } from '../../utils/router'
+// import { router } from '../../utils/router'
+import { Router } from 'express'
 import { 
     signupHandler,
     loginHandler,
@@ -7,9 +8,11 @@ import {
 } from '../../handlers/auth.handlers'
 import { authRateLimiter, loginRateLimiter } from '../../middleware/rateLimiter'
 
-router.post('/signup', authRateLimiter, signupHandler)
-router.post('/login', loginRateLimiter, loginHandler)
-router.post('/logout', logoutHandler)
-router.post('/refresh-token', refreshTokenHandler)
+const authRouter = Router()
 
-export default router
+authRouter.post('/signup', authRateLimiter, signupHandler)
+authRouter.post('/login', loginRateLimiter, loginHandler)
+authRouter.post('/logout', logoutHandler)
+authRouter.post('/refresh-token', refreshTokenHandler)
+
+export default authRouter

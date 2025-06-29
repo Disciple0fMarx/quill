@@ -1,22 +1,18 @@
 // src/App.tsx
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
-import { ProtectedRoute } from './components/ProtectedRoute'
-import { Login } from './pages/auth/Login'
-import { Profile } from './pages/dashboard/Profile'
+import Layout from './components/Layout'
+import AppRoutes from './routes/AppRoutes'
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/profile" element={<Profile />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <Layout> {/* If you have a global layout */}
+          <AppRoutes />
+        </Layout>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 

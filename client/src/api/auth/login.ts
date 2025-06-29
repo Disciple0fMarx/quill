@@ -1,14 +1,10 @@
 import { api } from '../axios'
-
-type LoginResponse = {
-  accessToken: string
-  refreshToken: string
-}
+import type { LoginResponse } from '../../types'
 
 export const login = async (email: string, password: string) => {
-  const { data } = await api.post<LoginResponse>('/login', { 
-    email, 
-    password 
+  const { data } = await api.post<LoginResponse>('/api/login', { 
+    email,
+    password,
   })
   return data
 }

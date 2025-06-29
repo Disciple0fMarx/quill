@@ -1,7 +1,9 @@
-import { router } from '../../utils/router'
+import { Router } from 'express'
 import { verifyAccessToken } from '../../middleware/auth.middleware'
 import { getProfileHandler } from '../../handlers/profile.handlers'
 
-router.get('/profile', verifyAccessToken, getProfileHandler)
+const profileRouter = Router()
 
-export default router
+profileRouter.get('/', verifyAccessToken, getProfileHandler)
+
+export default profileRouter

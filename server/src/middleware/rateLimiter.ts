@@ -17,7 +17,7 @@ export const authRateLimiter = rateLimit({
 // For login-specific stricter limits
 export const loginRateLimiter = rateLimit({
     windowMs: 60 * 60 * 1000,  // 1 hour
-    max: 3,                    // Limit each IP to 5 requests per window
+    max: 3,                    // Limit each IP to 3 requests per window
     standardHeaders: true,     // Return rate limit info in headers
     legacyHeaders: false,      // Disable deprecated headers
     handler: (_req, res) => {

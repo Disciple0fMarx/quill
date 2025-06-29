@@ -1,14 +1,11 @@
 import { api } from '../axios'
+import type { SignupResponse } from '../../types'
 
-type SignupResponse = {
-  accessToken: string
-  refreshToken: string
-}
-
-export const signup = async (email: string, password: string) => {
-  const { data } = await api.post<SignupResponse>('/signup', { 
-    email, 
-    password 
+export const signup = async (email: string, password: string, name: string) => {
+  const { data } = await api.post<SignupResponse>('/api/signup', { 
+    email,
+    password,
+    name,
   })
   return data
 }

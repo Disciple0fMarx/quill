@@ -1,10 +1,15 @@
 import express, { Request, Response } from 'express'
 import cors from 'cors'
 import { prisma } from './utils/prisma'
+import authRouter from './routes/public/auth'
+import meRouter from './routes/private/me'
+import profileRouter from './routes/private/profile'
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+}))
 app.use(express.json())
 
 // Routes
@@ -16,6 +21,10 @@ app.get('/posts', async (_req: Request, res: Response) => {
   const posts = await prisma.post.findMany()
   res.json(posts)
 })
+
+app.use('/api', authRouter)
+app.use('/me', meRouter)
+app.use('/profile', profileRouter)
 
 const PORT = 3001
 app.listen(PORT, () => {

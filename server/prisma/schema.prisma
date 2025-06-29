@@ -14,12 +14,17 @@ model Post {
   createdAt DateTime @default(now())
 }
 
+enum UserRole {
+  READER
+  AUTHOR
+}
+
 model User {
   id            String   @id @default(uuid())
   email         String   @unique
   password      String   // Will be hashed
   name          String?
-  role          String   @default("READER") // "ADMIN" | "AUTHOR"
+  role          UserRole   @default(READER) // "ADMIN" | "AUTHOR"
   refreshTokens RefreshToken[]
   createdAt     DateTime @default(now())
 }

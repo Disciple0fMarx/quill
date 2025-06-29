@@ -7,12 +7,17 @@ import { generateTokens, validateRefreshToken } from '../utils/tokens'
 export const signupHandler: RequestHandler<{}, AuthResponse, SignupRequest> = async (req, res) => {
     const { email, password, name } = req.body
 
+    if (!email || !password || !name) {
+        res.status(400).json({ error: "All fields are required" })
+        return
+    }
+
     try {
         const hashedPassword = await bcrypt.hash(password, 10)
         const user = await prisma.user.create({
             data: { email, name, password: hashedPassword }
         })
-
+        
         const tokens = await generateTokens(user.id)
         res.status(201).json(tokens)
         return
@@ -47,7 +52,16 @@ export const loginHandler: RequestHandler<{}, AuthResponse, LoginRequest> = asyn
         }
 
         const tokens = await generateTokens(user.id)
-        res.status(200).json(tokens)
+        res.status(200).json({
+            ...tokens,
+            user: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                createdAt: user.createdAt,
+            }
+        })
         return
     } catch (error) {
         res.status(500).json({ error: "Authentication failed" })
