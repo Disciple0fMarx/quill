@@ -3,6 +3,7 @@ import { SignupRequest, LoginRequest, AuthResponse } from '../types'
 import { prisma } from '../utils/prisma'
 import bcrypt from 'bcryptjs'
 import { generateTokens, validateRefreshToken } from '../utils/tokens'
+import { validateEmail, validatePassword, validateName, formatName } from '../utils/validation'
 
 export const signupHandler: RequestHandler<{}, AuthResponse, SignupRequest> = async (req, res) => {
     const { email, password, name } = req.body
@@ -12,10 +13,33 @@ export const signupHandler: RequestHandler<{}, AuthResponse, SignupRequest> = as
         return
     }
 
+    const emailValidation = validateEmail(email)
+    if (!emailValidation.valid) {
+        res.status(400).json({ error: emailValidation.message || "Invalid email" })
+        return
+    }
+
+    const passwordValidation = validatePassword(password)
+    if (!passwordValidation.valid) {
+        res.status(400).json({ error: passwordValidation.message || "Invalid password" })
+        return
+    }
+
+    const formattedName = formatName(name)
+    const nameValidation = validateName(formattedName)
+    if (!nameValidation.valid) {
+        res.status(400).json({ error: nameValidation.message || "Invalid name" })
+        return
+    }
+
     try {
         const hashedPassword = await bcrypt.hash(password, 10)
         const user = await prisma.user.create({
-            data: { email, name, password: hashedPassword }
+            data: {
+                email: email.toLocaleLowerCase(),
+                name: formattedName,
+                password: hashedPassword,
+            }
         })
         
         const tokens = await generateTokens(user.id)
@@ -36,8 +60,17 @@ export const loginHandler: RequestHandler<{}, AuthResponse, LoginRequest> = asyn
         return
     }
 
+    const emailValidation = validateEmail(email)
+    if (!emailValidation.valid) {
+        res.status(400).json({ error: emailValidation.message || "Invalid email format" })
+    }
+
     try {
-        const user = await prisma.user.findUnique({ where: { email } })
+        const user = await prisma.user.findUnique({
+            where: { 
+                email: email.toLowerCase()
+            }
+        })
         if (!user) {
             res.status(404).json({ error: "User not found" })
             //   res.status(401).json({ error: "Invalid email or password" })
