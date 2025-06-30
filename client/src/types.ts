@@ -6,6 +6,17 @@ export type User = {
   createdAt?: Date
 }
 
+export type Post = {
+  id: string
+  title: string
+  slug?: string
+  content: string
+  published?: boolean
+  createdAt?: Date
+  updatedAt?: Date
+  author: User
+}
+
 export type SignupResponse = {
   accessToken: string
   refreshToken: string

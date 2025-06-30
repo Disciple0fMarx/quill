@@ -12,6 +12,12 @@ export type LoginRequest = {
   password: string
 }
 
+export type CreatePostRequest = {
+  title: string
+  content: string
+  published?: boolean
+}
+
 
 export interface AuthenticatedRequest extends Request {
   userId?: string  // Matches JwtPayload.userId

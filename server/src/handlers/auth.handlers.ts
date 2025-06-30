@@ -72,15 +72,15 @@ export const loginHandler: RequestHandler<{}, AuthResponse, LoginRequest> = asyn
             }
         })
         if (!user) {
-            res.status(404).json({ error: "User not found" })
-            //   res.status(401).json({ error: "Invalid email or password" })
+            // res.status(404).json({ error: "User not found" })
+            res.status(401).json({ error: "Invalid email or password" })
             return 
         }
 
         const valid = await bcrypt.compare(password, user.password)
         if (!valid) {
-            res.status(401).json({ error: "Invalid password" })
-            //   res.status(401).json({ error: "Invalid email or password" })
+            // res.status(401).json({ error: "Invalid password" })
+            res.status(401).json({ error: "Invalid email or password" })
             return 
         }
 

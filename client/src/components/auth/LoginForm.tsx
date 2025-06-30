@@ -16,7 +16,7 @@ const LoginForm = ({ onSubmit, isLoading }: LoginFormProps) => {
     event.preventDefault()
 
     const emailValidation = validateEmail(email)
-    const passwordValidation = password.length > 8 && password.length < 30 ? { valid: true } : { valid: false, message: 'Password must be between 8 and 30 characters long' }
+    const passwordValidation = password.length >= 8 && password.length <= 30 ? { valid: true } : { valid: false, message: 'Password must be between 8 and 30 characters long' }
 
     setErrors({
       email: emailValidation.valid ? '' : emailValidation.message || '',

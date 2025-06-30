@@ -4,6 +4,7 @@ import { prisma } from './utils/prisma'
 import authRouter from './routes/public/auth'
 import meRouter from './routes/private/me'
 import profileRouter from './routes/private/profile'
+import postsRouter from './routes/private/posts'
 
 const app = express()
 
@@ -25,6 +26,7 @@ app.get('/posts', async (_req: Request, res: Response) => {
 app.use('/api', authRouter)
 app.use('/me', meRouter)
 app.use('/profile', profileRouter)
+app.use('/posts', postsRouter)
 
 const PORT = 3001
 app.listen(PORT, () => {

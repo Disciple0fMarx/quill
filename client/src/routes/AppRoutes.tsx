@@ -1,5 +1,5 @@
 import type { JSX } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import Login from '../pages/auth/Login'
 import Signup from '../pages/auth/Signup'
@@ -7,6 +7,8 @@ import Posts from '../pages/dashboard/Posts'
 import Profile from '../pages/dashboard/Profile'
 import NotFound from '../pages/404'
 import Layout from '../components/Layout'
+import { usePost } from '../hooks/usePosts'
+import PostDetail from '../components/dashboard/posts/PostDetail'
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user, isLoading } = useAuthContext()
@@ -26,6 +28,23 @@ function PublicOnlyRoute({ children }: { children: JSX.Element }) {
   return children
 }
 
+const ProtectedPostRoute = ({ children }: { children: React.ReactNode }) => {
+  const { user } = useAuthContext()
+  const { slug } = useParams()
+  const { post, loading, error } = usePost(slug || '')
+
+  if (loading) return <div>Loading...</div>
+  if (error) return <div>Post not found</div>
+  if (!post) return <div>Post not found</div>
+  
+  // Allow access if:
+  // - Post is published, OR
+  // - User is logged in AND is the author
+  const canAccess = post.published || (user && post.author?.id === user.id)
+
+  return canAccess ? children : <Navigate to="/login" />
+}
+
 const AppRoutes =() => {
   return (
     <Routes>
@@ -40,6 +59,20 @@ const AppRoutes =() => {
           <Signup />
         </PublicOnlyRoute>
       } />
+
+      {/* Protected post routes */}
+      <Route path="/posts/:slug" element={
+        <ProtectedPostRoute>
+          <PostDetail />
+        </ProtectedPostRoute>
+      } />
+
+      {/* <Route path="/posts/:slug" element={<PostDetail />} />
+      <Route path="/dashboard/posts/:slug" element={
+        <ProtectedRoute>
+          <PostDetail />
+        </ProtectedRoute>
+      } /> */}
 
       {/* Protected dashboard routes */}
       <Route path="/dashboard/posts" element={
