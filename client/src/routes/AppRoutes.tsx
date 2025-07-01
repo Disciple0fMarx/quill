@@ -9,6 +9,7 @@ import NotFound from '../pages/404'
 import Layout from '../components/Layout'
 import { usePost } from '../hooks/usePosts'
 import PostDetail from '../components/dashboard/posts/PostDetail'
+import CreatePost from '../pages/dashboard/CreatePost'
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user, isLoading } = useAuthContext()
@@ -45,7 +46,7 @@ const ProtectedPostRoute = ({ children }: { children: React.ReactNode }) => {
   return canAccess ? children : <Navigate to="/login" />
 }
 
-const AppRoutes =() => {
+const AppRoutes = () => {
   return (
     <Routes>
       {/* Public routes */}
@@ -65,6 +66,11 @@ const AppRoutes =() => {
         <ProtectedPostRoute>
           <PostDetail />
         </ProtectedPostRoute>
+      } />
+      <Route path="/dashboard/posts/new" element={
+        <ProtectedRoute>
+          <CreatePost />
+        </ProtectedRoute>
       } />
 
       {/* <Route path="/posts/:slug" element={<PostDetail />} />

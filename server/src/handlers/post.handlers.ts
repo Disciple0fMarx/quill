@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express'
 import { prisma } from '../utils/prisma'
 import type { AuthenticatedRequest } from '../types'
-import DOMPurify from 'dompurify'
 import { verifyAccessToken } from '../middleware/auth.middleware'
 
 // Helper to generate slugs
@@ -56,12 +55,10 @@ export const createPostHandler: RequestHandler = async (req: AuthenticatedReques
       return
     }
 
-    const cleanContent = DOMPurify.sanitize(content)
-
     const post = await prisma.post.create({
       data: {
         title,
-        content: cleanContent,
+        content,
         slug: await generateUniqueSlug(title),
         published,
         authorId: userId

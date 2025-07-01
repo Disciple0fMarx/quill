@@ -4,7 +4,6 @@ import { getCookie, setCookie } from '../utils/cookies'
 
 export function useRefreshToken() {
   const refresh = async () => {
-    console.log('[Token] Attempting refresh')
     try {
       const refreshTokenValue = getCookie('refreshToken')
       if (!refreshTokenValue) return null

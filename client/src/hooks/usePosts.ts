@@ -5,7 +5,7 @@ import type { Post } from '../types'
 
 export function usePosts() {
   const [posts, setPosts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuthContext()
 
