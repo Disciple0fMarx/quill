@@ -1,19 +1,35 @@
 import { useRef, useState } from 'react'
 import { createPost as apiCreatePost, deletePost as apiDeletePost, getPosts, getPostBySlug, getUserPosts, updatePost as apiUpdatePost } from '../api/index'
 import { useAuthContext } from '../context/AuthContext'
-import type { Post } from '../types'
+import type { Pagination, Post } from '../types'
 
 export function usePosts() {
   const [posts, setPosts] = useState<any[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuthContext()
+  const [pagination, setPagination] = useState<Pagination>({
+    currentPage: 1,
+    itemsPerPage: 10,
+    totalItems: 0,
+    totalPages: 1,
+  })
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (page: number = 1, limit: number = 10) => {
     try {
+      // setLoading(true)
+      // const data = await getPosts()
+      // setPosts(data)
       setLoading(true)
-      const data = await getPosts()
+      const { data, pagination } = await getPosts(page, limit)
       setPosts(data)
+      setPagination({
+        currentPage: pagination.currentPage,
+        itemsPerPage: pagination.itemsPerPage,
+        totalItems: pagination.totalItems,
+        totalPages: pagination.totalPages,
+      })
+      setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch posts')
     } finally {
@@ -21,13 +37,23 @@ export function usePosts() {
     }
   }
 
-  const fetchUserPosts = async () => {
+  const fetchUserPosts = async (page: number = 1, limit: number = 10) => {
     if (!user) return
     
     try {
+      // setLoading(true)
+      // const data = await getUserPosts()
+      // setPosts(data)
+      // setError(null)
       setLoading(true)
-      const data = await getUserPosts()
+      const { data, pagination } = await getUserPosts(page, limit)
       setPosts(data)
+      setPagination({
+        currentPage: pagination.currentPage,
+        itemsPerPage: pagination.itemsPerPage,
+        totalItems: pagination.totalItems,
+        totalPages: pagination.totalPages,
+      })
       setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch your posts')
@@ -71,10 +97,18 @@ export function usePosts() {
     posts,
     loading,
     error,
+    pagination,
     fetchPosts,
     fetchUserPosts,
     createPost,
     deletePost,
+    // setPage: (page: number) => {
+    //   if (user) {
+    //     fetchUserPosts(page, pagination.itemsPerPage)
+    //   } else {
+    //     fetchPosts(page, pagination.itemsPerPage)
+    //   }
+    // }
   }
 }
 

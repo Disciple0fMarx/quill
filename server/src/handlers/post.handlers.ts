@@ -2,6 +2,8 @@ import { RequestHandler } from 'express'
 import { prisma } from '../utils/prisma'
 import type { AuthenticatedRequest } from '../types'
 import { verifyAccessToken } from '../middleware/auth.middleware'
+import { isAdmin } from '../utils/adminCheck'
+import { paginate } from '../utils/pagination'
 
 // Helper to generate slugs
 const generateSlug = (title: string) => {
@@ -50,7 +52,7 @@ export const createPostHandler: RequestHandler = async (req: AuthenticatedReques
       return
     }
 
-    if (user.role !== 'AUTHOR') {
+    if (user.role === 'READER') {
       res.status(403).json({ error: "Only authors can create posts" })
       return
     }
@@ -72,15 +74,33 @@ export const createPostHandler: RequestHandler = async (req: AuthenticatedReques
   }
 }
 
-export const getPostsHandler: RequestHandler = async (_req, res) => {
+export const getPostsHandler: RequestHandler = async (req, res) => {
   try {
-    const posts = await prisma.post.findMany({
-      where: { published: true },
-      orderBy: { createdAt: 'desc' },
-      include: { author: { select: { name: true } } }
-    })
-    res.status(200).json(posts)
+    const { page = 1, limit = 10 } = req.query
+
+    const result = await paginate(
+      prisma.post,
+      {
+        where: { published: true },
+        orderBy: { createdAt: 'desc' },
+        include: { author: { select: { name: true } } }
+      },
+      {
+        page: Number(page),
+        limit: Number(limit),
+      }
+    )
+
+    res.status(200).json(result)
     return
+
+    // const posts = await prisma.post.findMany({
+    //   where: { published: true },
+    //   orderBy: { createdAt: 'desc' },
+    //   include: { author: { select: { name: true } } }
+    // })
+    // res.status(200).json(posts)
+    // return
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch posts" })
     return
@@ -90,23 +110,98 @@ export const getPostsHandler: RequestHandler = async (_req, res) => {
 export const getUserPostsHandler: RequestHandler = async (req: AuthenticatedRequest, res) => {
   const userId = req.userId
 
-  try {
-    const posts = await prisma.post.findMany({
-      where: { authorId: userId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        author: {
-          select: {
-            name: true,
-            id: true
-          }
-        }
-      }
-    })
-    res.status(200).json(posts)
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" })
     return
+  }
+
+  try {
+    const { page = 1, limit = 10 } = req.query
+    const result = await paginate(
+      prisma.post,
+      {
+        where: { authorId: userId },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          author: {
+            select: {
+              name: true,
+              id: true
+            }
+          }
+        },
+      },
+      {
+        page: Number(page),
+        limit: Number(limit),
+      }
+    )
+
+    res.status(200).json(result)
+    return
+
+    // const posts = await prisma.post.findMany({
+    //   where: { authorId: userId },
+    //   orderBy: { createdAt: 'desc' },
+    //   include: {
+    //     author: {
+    //       select: {
+    //         name: true,
+    //         id: true
+    //       }
+    //     }
+    //   }
+    // })
+    // res.status(200).json(posts)
+    // return
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch your posts" })
+    return
+  }
+}
+
+export const getPostsByAuthorHandler: RequestHandler = async (req, res) => {
+  try {
+    const { authorId } = req.params
+    const { page = 1, limit = 10 } = req.query
+
+    if (!authorId || typeof authorId !== 'string') {
+      res.status(400).json({ error: "Author ID is required" })
+      return
+    }
+
+    const author = await prisma.user.findUnique({
+      where: { id: authorId },
+      select: { role: true }
+    })
+
+    if (!author) {
+      res.status(404).json({ error: "Author not found" })
+      return
+    }
+
+    if (author.role === 'READER') {
+      res.status(403).json({ error: "Readers don't have posts" })
+      return
+    }
+
+    const result = await paginate(
+      prisma.post,
+      {
+        where: { authorId, published: true },
+        orderBy: { createdAt: 'desc' },
+        include: { author: { select: { name: true } } }
+      },
+      {
+        page: Number(page),
+        limit: Number(limit),
+      }
+    )
+
+    res.status(200).json(result)
+    return
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch posts" })
     return
   }
 }
@@ -145,8 +240,10 @@ export const getPostBySlugHandler: RequestHandler = async (req, res) => {
     // If the post isn't published, check if the requester is the author
     verifyAccessToken(req, res, () => {
       const reqUserId = (req as AuthenticatedRequest).userId
+      const isAuthor = post.authorId === reqUserId
+      const areTheyAdmin = reqUserId !== undefined ? isAdmin(reqUserId) : false
       
-      if (post.authorId !== reqUserId) {
+      if (!isAuthor && !areTheyAdmin) {
         res.status(403).json({ error: "You don't have permission to view this post" })
         return
       }
@@ -194,7 +291,9 @@ export const deletePostHandler: RequestHandler = async (req: AuthenticatedReques
       return
     }
 
-    if (post.authorId !== userId) {
+    const isAuthor = post.authorId === userId
+
+    if (!isAuthor && !isAdmin(userId)) {
       res.status(403).json({ error: "You can only delete your own posts" })
       return
     }
@@ -233,7 +332,9 @@ export const updatePostHandler: RequestHandler = async (req: AuthenticatedReques
       select: { authorId: true }
     })
 
-    if (!existingPost || existingPost.authorId !== userId) {
+    const isAuthor = existingPost?.authorId === userId
+
+    if (!existingPost || (!isAuthor && !isAdmin(userId))) {
       res.status(403).json({ error: "You can only update your own posts" })
       return
     }

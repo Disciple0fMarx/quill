@@ -4,7 +4,7 @@ import { useAuthContext } from '../../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 
 const Posts = () => {
-  const { posts, loading, error, fetchPosts, fetchUserPosts, deletePost } = usePosts()
+  const { posts, loading, error, pagination, fetchPosts, fetchUserPosts, deletePost } = usePosts()
   const { user } = useAuthContext()
   const navigate = useNavigate()
 
@@ -15,33 +15,57 @@ const Posts = () => {
   }
 
   return (
-    <div>
+    <div className="posts-container">
       <h1>Blog Posts</h1>
       
       {user && (
-        <div>
-          <button onClick={fetchPosts}>All Posts</button>
-          <button onClick={fetchUserPosts}>My Posts</button>
+        <div className="posts-actions">
+          <button onClick={() => fetchPosts()}>All Posts</button>
+          <button onClick={() => fetchUserPosts()}>My Posts</button>
           <button onClick={() => navigate('/posts/new')}>New Post</button>
         </div>
       )}
 
-      {loading && <div>Loading...</div>}
-      {error && <div>{error}</div>}
+      {loading && <div className="loading">Loading...</div>}
+      {error && <div className="error">{error}</div>}
 
-      {posts.map(post => (
-        <Post
-          key={post.id}
-          id={post.id}
-          title={post.title}
-          slug={post.slug}
-          author={post.author}
-          createdAt={post.createdAt}
-          onDelete={post.author.id === user?.id ? handleDelete : undefined}
-          isAuthor={post.author.id === user?.id}
-          published={post.published}
-        />
-      ))}
+      <div className="posts-list">
+        {posts.map(post => (
+          <Post
+            key={post.id}
+            id={post.id}
+            title={post.title}
+            slug={post.slug}
+            author={post.author}
+            createdAt={post.createdAt}
+            onDelete={post.author.id === user?.id ? handleDelete : undefined}
+            isAuthor={post.author.id === user?.id}
+            published={post.published}
+          />
+        ))}
+      </div>
+
+      {pagination.totalPages > 1 && (
+        <div className="pagination-controls">
+          <button 
+            disabled={pagination.currentPage === 1}
+            onClick={() => fetchPosts(pagination.currentPage - 1)}
+          >
+            Previous
+          </button>
+          
+          <span>
+            Page {pagination.currentPage} of {pagination.totalPages}
+          </span>
+          
+          <button 
+            disabled={pagination.currentPage === pagination.totalPages}
+            onClick={() => fetchPosts(pagination.currentPage + 1)}
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   )
 }

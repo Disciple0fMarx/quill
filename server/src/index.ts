@@ -23,7 +23,7 @@ app.get('/posts', async (_req: Request, res: Response) => {
   res.json(posts)
 })
 
-app.use('/api', authRouter)
+app.use('/auth', authRouter)
 app.use('/me', meRouter)
 app.use('/profile', profileRouter)
 app.use('/posts', postsRouter)

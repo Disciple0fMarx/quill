@@ -30,6 +30,7 @@ model Post {
 enum UserRole {
   READER
   AUTHOR
+  ADMIN
 }
 
 model User {

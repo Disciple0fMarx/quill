@@ -6,7 +6,7 @@ export const logout = async () => {
         .find(row => row.startsWith('refreshToken='))
         ?.split('=')[1]
 
-    await api.post('/api/logout', { refreshToken })
+    await api.post('/auth/logout', { refreshToken })
 
     // Clear frontend tokens
     localStorage.removeItem('accessToken');

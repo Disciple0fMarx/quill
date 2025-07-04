@@ -31,7 +31,7 @@ export type AuthResponse = {
     id: string
     email: string
     name?: string | null
-    role?: 'READER' | 'AUTHOR'
+    role?: 'READER' | 'AUTHOR' | 'ADMIN'
     createdAt?: Date
   }
   error?: never

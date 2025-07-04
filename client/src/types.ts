@@ -28,3 +28,14 @@ export type LoginResponse = {
   user: User
 }
 
+export type Pagination = {
+  currentPage: number
+  totalPages: number
+  totalItems: number
+  itemsPerPage: number
+}
+
+export interface PaginatedResult<T> {
+  data: T[]
+  pagination: Pagination
+}
