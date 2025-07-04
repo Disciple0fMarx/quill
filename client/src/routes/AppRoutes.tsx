@@ -1,4 +1,4 @@
-import type { JSX } from 'react'
+import { useEffect, type JSX } from 'react'
 import { Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import Login from '../pages/auth/Login'
@@ -7,9 +7,10 @@ import Posts from '../pages/dashboard/Posts'
 import Profile from '../pages/dashboard/Profile'
 import NotFound from '../pages/404'
 import Layout from '../components/Layout'
-import { usePost } from '../hooks/usePosts'
+import { usePost, usePosts } from '../hooks/usePosts'
 import PostDetail from '../components/dashboard/posts/PostDetail'
 import CreatePost from '../pages/dashboard/CreatePost'
+import EditPost from '../pages/dashboard/EditPost'
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user, isLoading } = useAuthContext()
@@ -24,18 +25,31 @@ function PublicOnlyRoute({ children }: { children: JSX.Element }) {
   const { user, isLoading } = useAuthContext()
 
   if (isLoading) return <div>Loading...</div>
-  if (user) return <Navigate to="/dashboard/posts" replace />
+  if (user) return <Navigate to="/posts" replace />
 
   return children
 }
 
-const ProtectedPostRoute = ({ children }: { children: React.ReactNode }) => {
+const ProtectedPostRoute = () => {
   const { user } = useAuthContext()
   const { slug } = useParams()
-  const { post, loading, error } = usePost(slug || '')
+  const { post, fetching, updating, error, fetchPost, updatePost } = usePost(slug || '')
+  const { deletePost } = usePosts()
 
-  if (loading) return <div>Loading...</div>
-  if (error) return <div>Post not found</div>
+  useEffect(() => {
+    fetchPost()
+  }, [slug])
+
+  const handlePublish = async () => await updatePost({ published: true })
+  const handleUnpublish = async () => await updatePost({ published: false })
+  const handleDelete = async (postId: string) => {
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      await deletePost(postId)
+    }
+  }
+
+  if (fetching) return <div>Loading...</div>
+  if (error) return <div>An error has occured</div>
   if (!post) return <div>Post not found</div>
   
   // Allow access if:
@@ -43,7 +57,15 @@ const ProtectedPostRoute = ({ children }: { children: React.ReactNode }) => {
   // - User is logged in AND is the author
   const canAccess = post.published || (user && post.author?.id === user.id)
 
-  return canAccess ? children : <Navigate to="/login" />
+  if (!canAccess) return <Navigate to="/login" />
+  return (
+    <PostDetail
+      post={post}
+      onPublish={handlePublish}
+      onUnpublish={handleUnpublish}
+      onDelete={handleDelete}
+      updating={updating} />
+  )
 }
 
 const AppRoutes = () => {
@@ -63,13 +85,16 @@ const AppRoutes = () => {
 
       {/* Protected post routes */}
       <Route path="/posts/:slug" element={
-        <ProtectedPostRoute>
-          <PostDetail />
-        </ProtectedPostRoute>
+        <ProtectedPostRoute />
       } />
-      <Route path="/dashboard/posts/new" element={
+      <Route path="/posts/new" element={
         <ProtectedRoute>
           <CreatePost />
+        </ProtectedRoute>
+      } />
+      <Route path="/posts/:slug/edit" element={
+        <ProtectedRoute>
+          <EditPost />
         </ProtectedRoute>
       } />
 
@@ -81,20 +106,20 @@ const AppRoutes = () => {
       } /> */}
 
       {/* Protected dashboard routes */}
-      <Route path="/dashboard/posts" element={
+      <Route path="/posts" element={
         <ProtectedRoute>
           <Posts />
         </ProtectedRoute>
       } />
-      <Route path="/dashboard/profile" element={
+      <Route path="/profile" element={
         <ProtectedRoute>
           <Profile />
         </ProtectedRoute>
       } />
 
       {/* Redirects */}
-      <Route path="/" element={<Navigate to="/dashboard/posts" replace />} />
-      <Route path="/dashboard" element={<Navigate to="/dashboard/posts" replace />} />
+      <Route path="/" element={<Navigate to="/posts" replace />} />
+      <Route path="/dashboard" element={<Navigate to="/posts" replace />} />
 
       {/* 404 */}
       <Route path="*" element={<NotFound />} />

@@ -9,6 +9,7 @@ export * from './users/updateProfile'
 
 export * from './posts/createPost'
 export * from './posts/deletePost'
+export * from './posts/updatePost'
 export * from './posts/getPosts'
 export * from './posts/getPostBySlug'
 export * from './posts/getUserPosts'

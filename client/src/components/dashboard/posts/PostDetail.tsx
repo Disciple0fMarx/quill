@@ -1,16 +1,19 @@
-import { useParams } from "react-router-dom"
-import { usePost } from "../../../hooks/usePosts"
+import { Link } from "react-router-dom"
+import { useAuthContext } from "../../../context/AuthContext"
+import type { Post } from "../../../types"
 
-const PostDetail = () => {
-  const { slug } = useParams<{ slug: string }>()
-  const { post, loading, error } = usePost(slug || "")
+interface PostDetailProps {
+  post: Post
+  onPublish: () => Promise<void>
+  onUnpublish: () => Promise<void>
+  onDelete: (id: string) => void
+  updating: boolean
+}
 
-  if (loading)
-    return <div>Loading...</div>
-  if (error)
-    return <div>Error: {error}</div>
-  if (!post)
-    return <div>Post not found</div>
+const PostDetail = ({ post, onPublish, onUnpublish, onDelete, updating }: PostDetailProps) => {
+  const { user } = useAuthContext()
+
+  const isAuthor = post.author.id === user?.id
 
   // Simple line break preservation
   const renderContent = (content: string) => {
@@ -35,7 +38,25 @@ const PostDetail = () => {
           </span>
         </div>
       </header>
-
+      {isAuthor && (
+        <div>
+          <Link to={`/posts/${post.slug}/edit`}>
+            <button disabled={updating}>Edit</button>
+          </Link>
+          {!post.published ? (
+            <button onClick={onPublish} disabled={updating}>
+              {updating ? "Publishing..." : "Publish"}
+            </button>
+          ) : (
+            <button onClick={onUnpublish} disabled={updating}>
+              {updating ? "Unpublishing..." : "Unpublish"}
+            </button>
+          )}
+          <button onClick={() => onDelete(post.id)}>
+            Delete
+          </button>
+        </div>
+      )}
       <section>{renderContent(post.content)}</section>
     </article>
   )

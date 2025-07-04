@@ -1,4 +1,3 @@
-// pages/CreatePost.tsx
 import { useState } from 'react'
 import MarkdownEditor from '../../editor/MarkdownEditor'
 import { useNavigate } from 'react-router-dom'
@@ -10,8 +9,25 @@ const CreatePostForm = () => {
   const { createPost, loading, error } = usePosts()
   const navigate = useNavigate()
 
+  const generateSlug = (title: string): string => {
+    return title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove non-word characters
+      .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+      .replace(/^-+|-+$/g, '')  // Remove leading/trailing hyphens
+  }
 
-  const handleSubmit = async (shouldPublish: boolean) => {    
+  const isValidSlug = (title: string): boolean => {
+    const slug = generateSlug(title)
+    return slug.length > 0
+  }
+
+  const handleSubmit = async (shouldPublish: boolean) => {
+    if (!isValidSlug(title)) {
+      alert('Invalid title')
+      return
+    }
     try {
       const newPost = await createPost({ title, content: markdown, published: shouldPublish })
 
@@ -63,7 +79,7 @@ const CreatePostForm = () => {
         <button
           type="submit"
           onClick={() => handleSubmit(false)}
-          disabled={loading || !title.trim()}
+          disabled={loading || !title.trim() || !isValidSlug(title)}
         >
           {loading ? 'Saving...' : 'Save Draft'}
         </button>
@@ -71,7 +87,7 @@ const CreatePostForm = () => {
         <button
           type="submit"
           onClick={() => handleSubmit(true)}
-          disabled={loading || !title.trim() || !markdown.trim()}
+          disabled={loading || !title.trim() || !markdown.trim() || !isValidSlug(title)}
         >
           {loading ? 'Publishing...' : 'Publish'}
         </button>

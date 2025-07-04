@@ -211,3 +211,64 @@ export const deletePostHandler: RequestHandler = async (req: AuthenticatedReques
     return
   }
 }
+
+export const updatePostHandler: RequestHandler = async (req: AuthenticatedRequest, res) => {
+  const { slug } = req.params
+  const updates = req.body
+  const userId = req.userId
+
+  if (!slug) {
+    res.status(400).json({ error: "Slug is required" })
+    return
+  }
+
+  if (!userId) {
+    res.status(401).json({ error: "Unauthorized" })
+    return
+  }
+
+  try {
+    const existingPost = await prisma.post.findUnique({
+      where: { slug },
+      select: { authorId: true }
+    })
+
+    if (!existingPost || existingPost.authorId !== userId) {
+      res.status(403).json({ error: "You can only update your own posts" })
+      return
+    }
+
+    if (updates.title !== undefined) {
+      updates.title = updates.title.trim()
+      if (!updates.title) {
+        res.status(400).json({ error: "Title cannot be empty" })
+        return
+      }
+    }
+
+    if (updates.content !== undefined) {
+      updates.content = updates.content.trim()
+      if (!updates.content) {
+        res.status(400).json({ error: "Content cannot be empty" })
+        return
+      }
+    }
+
+    const updatedPost = await prisma.post.update({
+      where: { slug },
+      data: {
+        ...(updates.title !== undefined && { title: updates.title }),
+        ...(updates.content !== undefined && { content: updates.content }),
+        ...(updates.published !== undefined && { published: updates.published }),
+        updatedAt: new Date(),
+      }
+    })
+
+    res.status(200).json(updatedPost)
+    return
+  } catch (error) {
+    console.error("Update error: ", error)
+    res.status(500).json({ error: "Failed to update post" })
+    return
+  }
+} 

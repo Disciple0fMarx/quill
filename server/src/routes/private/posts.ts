@@ -5,6 +5,7 @@ import {
     getUserPostsHandler,
     getPostBySlugHandler,
     deletePostHandler,
+    updatePostHandler,
 } from '../../handlers/post.handlers'
 import { verifyAccessToken } from '../../middleware/auth.middleware'
 
@@ -15,5 +16,6 @@ postsRouter.get('/all', getPostsHandler)
 postsRouter.get('/user', verifyAccessToken, getUserPostsHandler)
 postsRouter.get('/:slug', getPostBySlugHandler)
 postsRouter.delete('/:postId', verifyAccessToken, deletePostHandler)
+postsRouter.patch('/:slug', verifyAccessToken, updatePostHandler)
 
 export default postsRouter

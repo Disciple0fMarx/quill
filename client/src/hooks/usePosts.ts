@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
-import { createPost as apiCreatePost, deletePost as apiDeletePost, getPosts, getPostBySlug, getUserPosts } from '../api/index'
+import { useRef, useState } from 'react'
+import { createPost as apiCreatePost, deletePost as apiDeletePost, getPosts, getPostBySlug, getUserPosts, updatePost as apiUpdatePost } from '../api/index'
 import { useAuthContext } from '../context/AuthContext'
 import type { Post } from '../types'
 
@@ -80,35 +80,49 @@ export function usePosts() {
 
 export function usePost(slug: string) {
   const [post, setPost] = useState<Post | null>(null)
-  const [loading, setLoading] = useState<boolean>(true)
+  const [fetching, setFetching] = useState<boolean>(false)
+  const [updating, setUpdating] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
   const currentSlugRef = useRef<string | null>(null)
 
-  useEffect(() => {
+  const fetchPost = async () => {
     if (!slug || slug === currentSlugRef.current) return
 
-    currentSlugRef.current = slug
-    setLoading(true)
-    setError(null)
-
-    const fetchPost = async () => {
-      try {
-        const data = await getPostBySlug(slug)
-        setPost(data)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Post not found')
-      } finally {
-        setLoading(false)
-      }
+    try {
+      currentSlugRef.current = slug
+      setFetching(true)
+      setError(null)
+      
+      const data = await getPostBySlug(slug)
+      setPost(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Post not found')
+    } finally {
+      setFetching(false)
     }
+  }
 
-    fetchPost()
-  }, [slug])
+  const updatePost = async (updates: Partial<Post>) => {
+    try {
+      setUpdating(true)
+      setError(null)
+
+      await apiUpdatePost(slug, updates)
+      return
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update post')
+    } finally {
+      setUpdating(false)
+    }
+  }
 
   return {
     post,
-    loading,
+    fetching,
+    updating,
     error,
+    fetchPost,
+    updatePost,
   }
 }
