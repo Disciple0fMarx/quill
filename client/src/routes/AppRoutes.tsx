@@ -11,6 +11,7 @@ import { usePost, usePosts } from '../hooks/usePosts'
 import PostDetail from '../components/dashboard/posts/PostDetail'
 import CreatePost from '../pages/dashboard/CreatePost'
 import EditPost from '../pages/dashboard/EditPost'
+import Home from '../pages/Home'
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user, isLoading } = useAuthContext()
@@ -72,6 +73,12 @@ const AppRoutes = () => {
   return (
     <Routes>
       {/* Public routes */}
+      <Route path="/" element={
+        <PublicOnlyRoute>
+          <Home />
+        </PublicOnlyRoute>
+      } />
+
       <Route path="/login" element={
         <PublicOnlyRoute>
           <Login />
@@ -118,7 +125,7 @@ const AppRoutes = () => {
       } />
 
       {/* Redirects */}
-      <Route path="/" element={<Navigate to="/posts" replace />} />
+      {/* <Route path="/" element={<Navigate to="/posts" replace />} /> */}
       <Route path="/dashboard" element={<Navigate to="/posts" replace />} />
 
       {/* 404 */}
