@@ -2,7 +2,7 @@ export type User = {
   id: string
   email: string
   name: string | null
-  role?: 'READER' | 'AUTHOR'
+  role?: 'READER' | 'AUTHOR' | 'ADMIN'
   createdAt?: Date
 }
 
@@ -15,6 +15,19 @@ export type Post = {
   createdAt?: Date
   updatedAt?: Date
   author: User
+}
+
+export type AuthorApplication = {
+  id: string
+  userId: string
+  user?: User
+  message: string
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  submittedAt: string
+  reviewedBy?: User | null
+  reviewedAt?: string
+  reviewedById?: string
+  notes?: string
 }
 
 export type SignupResponse = {

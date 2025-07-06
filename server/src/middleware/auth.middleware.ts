@@ -1,5 +1,5 @@
 import { Response, NextFunction } from 'express'
-import jwt, { Jwt } from 'jsonwebtoken'
+import jwt from 'jsonwebtoken'
 import { AuthenticatedRequest, JwtPayload } from '../types'
 
 export const verifyAccessToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -28,14 +28,4 @@ export const verifyAccessToken = (req: AuthenticatedRequest, res: Response, next
     })
     return
   }
-
-  // jwt.verify(token, process.env.JWT_SECRET!, (err, decoded) => {
-  //   if (err) {
-  //     res.status(403).json({ error: "Invalid token" })
-  //     return
-  //   }
-
-  //   req.userId = (decoded as JwtPayload).userId
-  //   next()
-  // })
 }

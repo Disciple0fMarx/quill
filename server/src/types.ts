@@ -46,3 +46,14 @@ export type AuthResponse = {
 export type JwtPayload = {
   userId: string
 }
+
+export interface AuthorApplication {
+  id: string
+  userId: string
+  message: string
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  submittedAt: Date
+  reviewedAt?: Date
+  reviewedById?: string
+  notes?: string
+}

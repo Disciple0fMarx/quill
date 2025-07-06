@@ -34,14 +34,16 @@ enum UserRole {
 }
 
 model User {
-  id             String          @id @default(uuid())
-  email          String          @unique
+  id             String               @id @default(uuid())
+  email          String               @unique
   password       String
   name           String?
-  role           UserRole        @default(READER) // "ADMIN" | "AUTHOR"
+  role           UserRole             @default(READER) // "ADMIN" | "AUTHOR"
   refreshTokens  RefreshToken[]
   posts          Post[]
-  createdAt      DateTime        @default(now())
+  createdAt      DateTime             @default(now())
+  application    AuthorApplication?   @relation("UserApplication")
+  reviewedApps   AuthorApplication[]  @relation("ApplicationReviewer")
 }
 
 model RefreshToken {
@@ -51,4 +53,27 @@ model RefreshToken {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   expiresAt    DateTime
   createdAt    DateTime  @default(now())
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model AuthorApplication {
+  id            String             @id @default(cuid())
+  userId        String             @unique
+  user          User               @relation(fields: [userId], references: [id], name: "UserApplication", onDelete: Cascade)
+  message       String
+  status        ApplicationStatus  @default(PENDING)  // APPROVED, REJECTED
+  submittedAt   DateTime           @default(now())
+  reviewedAt    DateTime?
+  reviewedBy    User?              @relation(fields: [reviewedById], references: [id], name: "ApplicationReviewer", onDelete: SetNull)
+  reviewedById  String?
+  notes         String?            // For admin comments
+
+  @@index([userId])
+  @@index([status])
+  @@index([submittedAt])
 }

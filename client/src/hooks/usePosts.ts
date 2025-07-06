@@ -4,7 +4,7 @@ import { useAuthContext } from '../context/AuthContext'
 import type { Pagination, Post } from '../types'
 
 export function usePosts() {
-  const [posts, setPosts] = useState<any[]>([])
+  const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const { user } = useAuthContext()

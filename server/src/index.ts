@@ -5,6 +5,7 @@ import authRouter from './routes/public/auth'
 import meRouter from './routes/private/me'
 import profileRouter from './routes/private/profile'
 import postsRouter from './routes/private/posts'
+import applicationsRouter from './routes/private/applications'
 
 const app = express()
 
@@ -27,6 +28,7 @@ app.use('/auth', authRouter)
 app.use('/me', meRouter)
 app.use('/profile', profileRouter)
 app.use('/posts', postsRouter)
+app.use('/applications', applicationsRouter)
 
 const PORT = 3001
 app.listen(PORT, () => {

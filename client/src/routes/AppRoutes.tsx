@@ -12,6 +12,8 @@ import PostDetail from '../components/dashboard/posts/PostDetail'
 import CreatePost from '../pages/dashboard/CreatePost'
 import EditPost from '../pages/dashboard/EditPost'
 import Home from '../pages/Home'
+import ApplyPage from '../pages/dashboard/Apply'
+import AdminAppsPage from '../pages/admin/AdminAppsPage'
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user, isLoading } = useAuthContext()
@@ -27,6 +29,16 @@ function PublicOnlyRoute({ children }: { children: JSX.Element }) {
 
   if (isLoading) return <div>Loading...</div>
   if (user) return <Navigate to="/posts" replace />
+
+  return children
+}
+
+function AdminOnlyRoute({ children }: { children: JSX.Element }) {
+  const { user, isLoading } = useAuthContext()
+
+  if (isLoading) return <div>Loading...</div>
+  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />
+  if (user.role !== 'ADMIN') return <Navigate to="/" replace />
 
   return children
 }
@@ -104,13 +116,11 @@ const AppRoutes = () => {
           <EditPost />
         </ProtectedRoute>
       } />
-
-      {/* <Route path="/posts/:slug" element={<PostDetail />} />
-      <Route path="/dashboard/posts/:slug" element={
+      <Route path="/apply" element={
         <ProtectedRoute>
-          <PostDetail />
+          <ApplyPage />
         </ProtectedRoute>
-      } /> */}
+      } />
 
       {/* Protected dashboard routes */}
       <Route path="/posts" element={
@@ -122,6 +132,12 @@ const AppRoutes = () => {
         <ProtectedRoute>
           <Profile />
         </ProtectedRoute>
+      } />
+      
+      <Route path="/admin/applications" element={
+        <AdminOnlyRoute>
+          <AdminAppsPage />
+        </AdminOnlyRoute>
       } />
 
       {/* Redirects */}

@@ -15,8 +15,14 @@ const Header = () => {
         <nav>
           {user ? (
             <>
-              <Link to="/dashboard">Dashboard</Link>
+              <Link to="/">Home</Link>
               <Link to="/profile">Profile</Link>
+              {user.role === 'READER' && (
+                <Link to="/apply">Become an Author</Link>
+              )}
+              {user.role === 'ADMIN' && (
+                <Link to="/admin/applications">Author Applications</Link>
+              )}
               <button onClick={logout}>Logout</button>
             </>
           ) : (
