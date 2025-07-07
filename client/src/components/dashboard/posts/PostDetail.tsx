@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom"
 import { useAuthContext } from "../../../context/AuthContext"
 import type { Post } from "../../../types"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 interface PostDetailProps {
   post: Post
@@ -16,13 +18,13 @@ const PostDetail = ({ post, onPublish, onUnpublish, onDelete, updating }: PostDe
   const isAuthor = post.author.id === user?.id
 
   // Simple line break preservation
-  const renderContent = (content: string) => {
-    return content
-      .split("\n")
-      .map((paragraph, index) =>
-        paragraph ? <p key={index}>{paragraph}</p> : <br key={index} />
-      )
-  }
+  // const renderContent = (content: string) => {
+  //   return content
+  //     .split("\n")
+  //     .map((paragraph, index) =>
+  //       paragraph ? <p key={index}>{paragraph}</p> : <br key={index} />
+  //     )
+  // }
 
   return (
     <article>
@@ -57,7 +59,8 @@ const PostDetail = ({ post, onPublish, onUnpublish, onDelete, updating }: PostDe
           </button>
         </div>
       )}
-      <section>{renderContent(post.content)}</section>
+      {/* <section>{renderContent(post.content)}</section> */}
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
     </article>
   )
 }

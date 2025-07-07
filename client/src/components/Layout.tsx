@@ -12,7 +12,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="app-container">
       <Header />
-      <main>
+      <main style={{ minHeight: 'calc(100vh - 9rem)' }}>
         {children || <Outlet />} {/* Handle both cases */}
       </main>
       <Footer />

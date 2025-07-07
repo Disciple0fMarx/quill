@@ -36,10 +36,14 @@ const SignupForm = ({ onSubmit, isLoading }: SignupFormProps) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-3"
+    >
       <div>
-        <label htmlFor="signup-name">Name</label>
+        <label htmlFor="signup-name" className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Name</label>
         <input
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-green-600 focus:border-green-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
           type="text"
           id='signup-name'
           name="signup-name"
@@ -48,11 +52,12 @@ const SignupForm = ({ onSubmit, isLoading }: SignupFormProps) => {
           placeholder="Name"
           required
         />
-        {errors.name && <span>{errors.name}</span>}
+        {errors.name && <span className="text-xs text-red-600 dark:text-red-400 mt-1 block">{errors.name}</span>}
       </div>
       <div>
-        <label htmlFor="signup-email">Email</label>
+        <label htmlFor="signup-email" className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Email</label>
         <input
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-green-600 focus:border-green-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
           type="email"
           id="signup-email"
           name="signup-email"
@@ -61,14 +66,15 @@ const SignupForm = ({ onSubmit, isLoading }: SignupFormProps) => {
           placeholder="Email"
           required
         />
-        {errors.email && <span>{errors.email}</span>}
+        {errors.email && <span className="text-xs text-red-600 dark:text-red-400 mt-1 block">{errors.email}</span>}
       </div>
       <div>
-        <label htmlFor="signup-password">
+        <label htmlFor="signup-password" className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">
           Password{' '}
           <span title="Password must be between 8 and 30 characters long, contain at least one uppercase letter, one lowercase letter, one digit, and one special character">ℹ️</span>
         </label>
         <input
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-green-600 focus:border-green-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
           type="password"
           id="signup-password"
           name="signup-password"
@@ -77,11 +83,12 @@ const SignupForm = ({ onSubmit, isLoading }: SignupFormProps) => {
           placeholder="Password"
           required
         />
-        {errors.password && <span>{errors.password}</span>}
+        {errors.password && <span className="text-xs text-red-600 dark:text-red-400 mt-1 block">{errors.password}</span>}
       </div>
       <div>
-        <label htmlFor="signup-repeat-password">Repeat Password</label>
+        <label htmlFor="signup-repeat-password" className="block mb-1 text-sm font-medium text-gray-900 dark:text-white">Repeat Password</label>
         <input
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-green-600 focus:border-green-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
           type="password"
           id="signup-repeat-password"
           name='signup-repeat-password'
@@ -90,9 +97,13 @@ const SignupForm = ({ onSubmit, isLoading }: SignupFormProps) => {
           placeholder="Repeat Password"
           required
         />
-        {errors.repeatPassword && <span>{errors.repeatPassword}</span>}
+        {errors.repeatPassword && <span className="text-xs text-red-600 dark:text-red-400 mt-1 block">{errors.repeatPassword}</span>}
       </div>
-      <button type="submit" disabled={isLoading}>
+      <button 
+        type="submit"
+        disabled={isLoading}
+        className="mt-3 w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+      >
         {isLoading ? 'Creating account...' : 'Sign Up'}
       </button>
     </form>
