@@ -1,11 +1,9 @@
-import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useApplication } from "../../hooks/useApplication"
 import ApplicationForm from "../../components/dashboard/author_apps/ApplicationForm"
 import StatusCard from "../../components/dashboard/author_apps/StatusCard"
 
 const ApplyPage = () => {
-    const [message, setMessage] = useState<string>('')
     const {
         submitApplication,
         isSubmitting,
@@ -16,27 +14,30 @@ const ApplyPage = () => {
     const navigate = useNavigate()
 
     const handleSubmit = (msg: string) => {
-        setMessage(msg)
+        console.log('Message: ', msg)
         submitApplication(msg)
     }
 
     if (hasPendingApplications || isSubmitted) return (
-        <StatusCard 
-            title="Application Submitted"
-            message="Your author application is under review."
-            actionLabel="Return Home"
-            onAction={() => navigate('/')}
-        />
+        <div className="min-h-screen flex flex-col items-center justify-center w-full">
+            <StatusCard 
+                title="Application Submitted"
+                message="Your author application is under review."
+                actionLabel="Return Home"
+                onAction={() => navigate('/')}
+            />
+        </div>
     )
 
     return (
-        <div>
-            <h1>Become an Author</h1>
-            <ApplicationForm
-                onSubmit={() => handleSubmit(message)}
-                isLoading={isSubmitting}
-                error={submissionError}
-            />
+        <div className="min-h-screen flex flex-col items-center justify-center w-full">
+            <div className="w-full max-w-4xl mx-auto px-4">
+                <ApplicationForm
+                    onSubmit={handleSubmit}
+                    isLoading={isSubmitting}
+                    error={submissionError}
+                />
+            </div>
         </div>
     )
 }

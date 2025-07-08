@@ -2,7 +2,6 @@ import { useState } from 'react'
 import AuthLayout from '../../components/auth/AuthLayout'
 import LoginForm from '../../components/auth/LoginForm'
 import { useAuthContext } from '../../context/AuthContext'
-import { Link } from 'react-router-dom'
 import logo from '../../assets/images/logo.png'
 
 const Login = () => {
@@ -24,13 +23,18 @@ const Login = () => {
           <img src={logo} alt="Quill Logo" className="w-32 h-32 mx-auto" />
         </Link> */}
         <div className="md:w-1/2 flex justify-center mb-8 md:mb-0">
-          <Link to="/" className="flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
+          <img 
+            src={logo} 
+            alt="Quill Logo" 
+            className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80" 
+          />
+          {/* <Link to="/" className="flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
             <img 
               src={logo} 
               alt="Quill Logo" 
               className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80" 
             />
-          </Link>
+          </Link> */}
         </div>
         <AuthLayout
           title="Log In"

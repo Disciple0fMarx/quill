@@ -3,6 +3,8 @@ import { usePost } from '../../hooks/usePosts'
 import Post from '../../components/dashboard/posts/Post'
 import { useAuthContext } from '../../context/AuthContext'
 import { useEffect, useState } from 'react'
+import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import NotFound from '../404'
 
 const PostPage = () => {
   const { slug } = useParams<{ slug: string }>()
@@ -14,9 +16,9 @@ const PostPage = () => {
     if (slug) fetchPost()
   }, [slug])
 
-  if (fetching) return <div>Loading...</div>
-  if (error) return <div>{error}</div>
-  if (!post) return <div>Post not found</div>
+  if (fetching) return <LoadingSpinner size='md' center />  /* <div>Loading...</div> */
+  if (error) return <NotFound /> /* <div>{error}</div> */
+  if (!post) return <NotFound /> /* <div>Post not found</div> */
 
   const isAuthor = post.author?.id === user?.id
 

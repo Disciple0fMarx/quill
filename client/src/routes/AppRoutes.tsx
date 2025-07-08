@@ -14,11 +14,18 @@ import EditPost from '../pages/dashboard/EditPost'
 import Home from '../pages/Home'
 import ApplyPage from '../pages/dashboard/Apply'
 import AdminAppsPage from '../pages/admin/AdminAppsPage'
+import LoadingSpinner from '../components/ui/LoadingSpinner'
 
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const { user, isLoading } = useAuthContext()
   
-  if (isLoading) return <Layout><div>Loading...</div></Layout>
+  if (isLoading)
+    return (
+      <Layout>
+        <LoadingSpinner size='md' center />
+        {/* <div>Loading...</div> */}
+      </Layout>
+    )
   if (!user) return <Navigate to="/login" replace />
   
   return children
@@ -27,7 +34,7 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
 function PublicOnlyRoute({ children }: { children: JSX.Element }) {
   const { user, isLoading } = useAuthContext()
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <LoadingSpinner size='md' center /> /* <div>Loading...</div> */
   if (user) return <Navigate to="/posts" replace />
 
   return children
@@ -36,7 +43,7 @@ function PublicOnlyRoute({ children }: { children: JSX.Element }) {
 function AdminOnlyRoute({ children }: { children: JSX.Element }) {
   const { user, isLoading } = useAuthContext()
 
-  if (isLoading) return <div>Loading...</div>
+  if (isLoading) return <LoadingSpinner size='md' center /> /* <div>Loading...</div> */
   if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />
   if (user.role !== 'ADMIN') return <Navigate to="/" replace />
 
@@ -61,9 +68,9 @@ const ProtectedPostRoute = () => {
     }
   }
 
-  if (fetching) return <div>Loading...</div>
-  if (error) return <div>An error has occured</div>
-  if (!post) return <div>Post not found</div>
+  if (fetching) return <LoadingSpinner size='md' center /> /* <div>Loading...</div> */
+  if (error) return <NotFound /> /* <div>An error has occured</div> */
+  if (!post) return <NotFound /> /* <div>Post not found</div> */
   
   // Allow access if:
   // - Post is published, OR

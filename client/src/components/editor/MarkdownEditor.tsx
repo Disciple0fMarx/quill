@@ -13,7 +13,7 @@ const MarkdownEditor = ({ id, name, value, onChange, disabled = false }: Markdow
         <MDEditor
             value={value}
             onChange={(val) => onChange(val || '')}
-            // height={400}
+            height={400}
             preview="edit"
             textareaProps={{
               id: id,

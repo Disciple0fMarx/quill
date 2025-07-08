@@ -78,17 +78,20 @@ const EditPostForm = () => {
       ) : (
         <form
           onSubmit={(e) => e.preventDefault()}
+          className="space-y-3"
         //   className="space-y-6"
           aria-label="Edit post form"
         >
           <div>
             <label
+              className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
               htmlFor="edit-post-title"
             //   className="block text-sm font-medium text-gray-700"
             >
               Title
             </label>
             <input
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-green-600 focus:border-green-600 block w-full p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-green-500 dark:focus:border-green-500"
               value={title}
               id="edit-post-title"
               name="edit-post-title"
@@ -103,6 +106,7 @@ const EditPostForm = () => {
 
           <div>
             <label
+              className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
               htmlFor="edit-post-content"
             //   className="block text-sm font-medium text-gray-700"
             >
@@ -121,15 +125,43 @@ const EditPostForm = () => {
 
           {error && (
             <div
-            //   className="text-red-600 bg-red-50 p-3 rounded-md"
+              className="text-red-600 bg-red-50 p-3 rounded-md"
               role="alert"
             >
               Error: {error}
             </div>
           )}
 
-          <div>
+          <div className="flex items-center justify-center">
             <button
+              type="submit"
+              onClick={() => handleSubmit(false)}
+              disabled={updating || isLoadingPost || !title.trim() || !isValidSlug(title)}
+              className={`px-5 py-2.5 mr-1 font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                updating || isLoadingPost || !title.trim() || !isValidSlug(title)
+                  ? 'bg-gray-400 text-gray-800 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300'
+                  : 'bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800'
+              }`}
+              aria-label="Save as draft"
+            >
+              {updating ? 'Saving...' : 'Save Draft'}
+            </button>
+
+            <button
+              type="submit"
+              onClick={() => handleSubmit(true)}
+              disabled={updating || isLoadingPost || !title.trim() || !markdown.trim() || !isValidSlug(title)}
+              className={`px-5 py-2.5 ml-1 font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 ${
+                updating || isLoadingPost || !title.trim() || !markdown.trim() || !isValidSlug(title)
+                  ? 'bg-gray-400 text-gray-800 cursor-not-allowed dark:bg-gray-600 dark:text-gray-300'
+                  : 'bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800'
+              }`}
+              aria-label="Publish post"
+            >
+              {updating ? 'Publishing...' : 'Publish'}
+            </button>
+            {/* <button
+              className="px-4 py-2 mr-2 mt-4 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
               type="submit"
               onClick={() => handleSubmit(false)}
               disabled={updating || isLoadingPost || !title.trim() || !isValidSlug(title)}
@@ -139,6 +171,7 @@ const EditPostForm = () => {
               {updating ? 'Saving...' : 'Save Draft'}
             </button>
             <button
+              className="px-4 py-2 ml-2 mt-4 bg-green-600 dark:bg-green-700 text-white rounded hover:bg-green-700 dark:hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
               type="submit"
               onClick={() => handleSubmit(true)}
               disabled={updating || isLoadingPost || !title.trim() || !markdown.trim() || !isValidSlug(title)}
@@ -146,7 +179,7 @@ const EditPostForm = () => {
               aria-label="Publish post"
             >
               {updating ? 'Publishing...' : 'Publish'}
-            </button>
+            </button> */}
           </div>
         </form>
       )}

@@ -1,7 +1,7 @@
 // src/components/layout/Header.tsx
 import { Link } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
-import logoCrop from '../assets/images/logoCrop.png'
+import noText from '../assets/images/noText.png'
 import { useState } from 'react'
 
 const Header = () => {
@@ -16,7 +16,7 @@ const Header = () => {
       <nav className="backdrop-blur-sm bg-white/60 border-gray-200/30 dark:bg-gray-900/60 dark:border-gray-700/30 border-b">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <Link to="/">
-            <img src={logoCrop} alt="Quill Logo" className="h-16" />
+            <img src={noText} alt="Quill Logo" className="h-8" />
           </Link>
           <button 
             onClick={toggleMenu}
@@ -37,17 +37,18 @@ const Header = () => {
                 <>  
                   <li>
                     <Link 
-                      to="/" 
-                      className="block py-2 px-3 text-white bg-green-700 rounded-sm md:bg-transparent md:text-green-700 md:p-0 dark:text-white md:dark:text-green-500" 
-                      aria-current="page"
+                      to="/posts" 
+                      className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" 
+                      onClick={toggleMenu}
                     >
-                      Home
+                      Posts
                     </Link>
                   </li>
                   <li>
                     <Link 
                       to="/profile" 
                       className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                      onClick={toggleMenu}
                     >
                       Profile
                     </Link>
@@ -57,6 +58,7 @@ const Header = () => {
                       <Link 
                         to="/apply" 
                         className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        onClick={toggleMenu}
                       >
                         Become an Author
                       </Link>
@@ -67,6 +69,7 @@ const Header = () => {
                       <Link 
                         to="/admin/applications" 
                         className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                        onClick={toggleMenu}
                       >
                         Author Applications
                       </Link>
@@ -87,6 +90,7 @@ const Header = () => {
                     <Link 
                       to="/login" 
                       className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                      onClick={toggleMenu}
                     >
                       Log In
                     </Link>
@@ -95,6 +99,7 @@ const Header = () => {
                     <Link 
                       to="/signup" 
                       className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-green-700 md:p-0 dark:text-white md:dark:hover:text-green-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                      onClick={toggleMenu}
                     >
                       Sign Up
                     </Link>

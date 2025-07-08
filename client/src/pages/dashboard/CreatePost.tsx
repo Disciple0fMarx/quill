@@ -2,9 +2,11 @@ import CreatePostForm from "../../components/dashboard/posts/CreatePostForm"
 
 const CreatePost = () => {
   return (
-    <div>
-        <h1>Create New Post</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center mt-10">
+      <div className="w-full px-4 sm:px-8">
+        <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">Create New Post</h1>
         <CreatePostForm />
+      </div>
     </div>
   )
 }
